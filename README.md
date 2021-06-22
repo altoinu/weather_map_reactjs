@@ -1,70 +1,143 @@
-# Getting Started with Create React App
+## Writing README stuff
+[https://help.github.com/en/articles/basic-writing-and-formatting-syntax](https://help.github.com/en/articles/basic-writing-and-formatting-syntax)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Node stuff
+- Node.js (v14.2.0) and npm [https://nodejs.org/](https://nodejs.org/)
+- PM2 (v4.4.0) [http://pm2.keymetrics.io](http://pm2.keymetrics.io)
 
-## Available Scripts
+## Initial set up
+```
+npm install
+```
 
-In the project directory, you can run:
+## To start/restart:
+```
+pm2 start [ecosystem config file].js
+pm2 restart [ecosystem config file].js
+pm2 startOrRestart [ecosystem config file].js
+```
+- [PM2 cluster mode](http://pm2.keymetrics.io/docs/usage/cluster-mode)
+- Immediately shuts down currently running process and then starts new one.
+    - Causes this too-
+        - App [app_name] with id [0] and pid [20743], exited with code [100] via signal [SIGINT]
 
-### `npm start`
+## To reload:
+```
+pm2 reload [ecosystem config file].js
+pm2 startOrReload [ecosystem config file].js
+```
+- [PM2 cluster mode, reload](http://pm2.keymetrics.io/docs/usage/cluster-mode/#reload)
+- [https://stackoverflow.com/questions/44883269/what-is-the-difference-between-pm2-restart-and-pm2-reload](https://stackoverflow.com/questions/44883269/what-is-the-difference-between-pm2-restart-and-pm2-reload)
+    - "With reload, pm2 restarts all processes one by one, always keeping at least one process running."
+    - "If the reload system hasn’t managed to reload your application, a timeout will fallback to a classic restart."
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## To gracefully reload (RECOMMENDED):
+```
+pm2 gracefulReload [ecosystem config file].js
+pm2 startOrGracefulReload [ecosystem config file].js (reloads env var as well)
+```
+- [PM2 cluster mode, graceful shutdown](http://pm2.keymetrics.io/docs/usage/cluster-mode/#graceful-shutdown)
+- [http://pm2.keymetrics.io/docs/usage/signals-clean-restart/](http://pm2.keymetrics.io/docs/usage/signals-clean-restart/)
+    - Allows to do process.on('SIGINT', function() {... before shutdown
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Notes when restarting:
+As of pm2 -v 3.5.1
+- --update-env option doesn't seem to be working as it should
+    - [https://github.com/Unitech/pm2/issues/3796](https://github.com/Unitech/pm2/issues/3796)
+- watch: true does not update env that were changed in config .js/json
+    - need to manually do pm2 startOrGracefulReload [ecosystem config file].js
+- Manual restart/reload/gracefulReload causes env to be updated to whatever is in config .js/json
+    - However if env var is removed from .js/json, it still remains in process.env and gets loaded.
+    Not sure if this is pm2/node bug or just the way things are.
+        - To prevent this, do pm2 delete to completely remove then pm2 start
 
-### `npm test`
+## Building Everything
+```
+npm run build
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Angular Frontend
+Angular is installed as dev dependency, and used to build front end stuff. cd into my-angular-app to make updates:
 
-### `npm run build`
+```
+cd my-angular-app
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+npm run ng -- serve
+or
+npm run ng -- build
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Running nodejs server with pm2, and ng build with watch option
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```
+pm2 start [ecosystem config file].js
+cd my-angular-app
+npm run ng -- build --watch
+```
 
-### `npm run eject`
+Building for production
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```
+npm run build:angular
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+On low memory machine (ex t2.micro on AWS EC2) prod build fails (error code 137). In this case, increase memory limit for node.
+- [https://medium.com/@vuongtran/how-to-solve-process-out-of-memory-in-node-js-5f0de8f8464c](https://medium.com/@vuongtran/how-to-solve-process-out-of-memory-in-node-js-5f0de8f8464c)
+- [https://github.com/npm/npm/issues/12238#issuecomment-301645764](https://github.com/npm/npm/issues/12238#issuecomment-301645764)
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```
+node --max-old-space-size=2048 `which npm` build:angular
+```
+Yes, it's a hacky solution...FTP'ing files that are built on other machine is probably better alternative.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## React Frontend
 
-## Learn More
+```
+cd my-react-app
+npm run start
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Running nodejs server with pm2
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```
+npm run build:reactjs
+pm2 start [ecosystem config file].js
+```
 
-### Code Splitting
+Building for production
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+```
+npm run build:reactjs
+```
 
-### Analyzing the Bundle Size
+## Generating docs
+```
+npm run build:doc
+```
+- Runs both apidoc and jsdoc
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### apidoc
+```
+npm run build:doc:apidoc
+```
+- outputs to server/apidoc
+- [https://www.npmjs.com/package/apidoc](https://www.npmjs.com/package/apidoc)
+- [http://apidocjs.com/](http://apidocjs.com/)
+    - [params](http://apidocjs.com/#params)
 
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### jsdoc
+```
+npm run build:doc:jsdoc
+```
+- outputs to server/jsdoc
+- [https://www.npmjs.com/package/jsdoc](https://www.npmjs.com/package/jsdoc)
+- [https://jsdoc.app/](https://jsdoc.app/)
+     - [Getting started](https://jsdoc.app/about-getting-started.html)
+     - [tags](https://jsdoc.app/tags-example.html)
+     - [Namepaths](https://jsdoc.app/about-namepaths.html)
+     - [Namespace](https://jsdoc.app/tags-namespace.html)
+         - [memberof](https://jsdoc.app/tags-memberof.html)
+     - [Module](https://jsdoc.app/tags-module.html)
+         - [param](https://jsdoc.app/tags-param.html)
+         - [Function](https://jsdoc.app/tags-function.html)
+         - [Class](https://jsdoc.app/tags-class.html)

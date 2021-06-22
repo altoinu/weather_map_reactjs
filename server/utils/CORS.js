@@ -1,0 +1,136 @@
+/**
+ * Express js middleware to allow CORS request on origin specified
+ * @module CORS
+ * @version 1.0.0 2019/02/22
+ * @requires module:Logger
+ * 
+ * @example
+ * var cors = require('./CORS.js')({
+ *    "origin": [
+ *       "http://localhost",
+ *       "http://localhost:3001",
+ *       "http://www.example.com",...
+ *    ]
+ * });
+ * 
+ * // or
+ * var cors = require('./CORS.js')({
+ *    "origin": [
+ *       "*"
+ *    ]
+ * });
+ * 
+ * app.use(cors.allow);
+ * 
+ * @todo Set requestMethod, requestHeader via corsDef too?
+ */
+
+// --------------------------------------------------------------------------
+//
+// private variables
+//
+// --------------------------------------------------------------------------
+var Logger = require('../utils/Logger.js');
+var logger = new Logger();
+logger.prefix = 'CORS:';
+
+//--------------------------------------------------------------------------
+//
+// stuff
+//
+// --------------------------------------------------------------------------
+
+/**
+ * Express js middleware to allow CORS request on origin specified in corsDef
+ * @alias module:CORS#allow
+ * @param req
+ * @param res
+ * @param next
+ */
+var allow = function(corsDef, req, res, next) {
+
+	if (req.method == 'OPTIONS') {
+
+		logger.log(req.method + ' ' + req.originalUrl);
+		logger.log(req.headers);
+
+	}
+
+	if (req.headers.hasOwnProperty('origin')) {
+
+		// header contains origin for CORS
+
+		var is_CORS_ALLOW_ORIGIN_WILDCARD = (corsDef.origin.indexOf('*') != -1);
+		if ((corsDef.origin.indexOf(req.headers.origin) != -1) || is_CORS_ALLOW_ORIGIN_WILDCARD) {
+
+			// origin is defined in corsDef, allow cross domain
+
+			// add necessary headers
+
+			logger.log(req.headers.origin);
+			res.header('Access-Control-Allow-Origin', is_CORS_ALLOW_ORIGIN_WILDCARD ? '*' : req.headers.origin);
+			// Access-Control-Allow-Credentials true/false
+			// Access-Control-Expose-Headers
+
+			// TODO: set these values in corsDef too?
+			var requestMethod;
+			var requestHeader;
+			for ( var header in req.headers) {
+
+				//logger.log(header, req.headers[header]);
+
+				if (header.toLowerCase() == 'access-control-request-method')
+					requestMethod = req.headers[header];
+
+				if (header.toLowerCase() == 'access-control-request-headers')
+					requestHeader = req.headers[header];
+
+			}
+
+			if (!requestMethod)
+				requestMethod = 'GET,POST,OPTIONS';
+			if (!requestHeader)
+				requestHeader = 'accept, content-type';
+
+			logger.log(requestMethod);
+			logger.log(requestHeader);
+			res.header('Access-Control-Allow-Methods', requestMethod);
+			res.header('Access-Control-Allow-Headers', requestHeader);
+
+		} else {
+
+			logger.error('CORS error... origin "' + req.headers.origin + '" not specified');
+
+		}
+
+	}
+
+	// method OPTIONS is browser checking for CORS
+	// return status 200
+	if (req.method == 'OPTIONS')
+		res.status(200).end();
+	else
+		next();
+
+};
+
+/**
+ * @param {Object} corsDef - CORS definition.
+ * @param {string[]} [corsDef.origin] - CORS allowed origin domain.
+ * 
+ * @returns {Object} Object {allow - expressjs middleware}
+ */
+var CORS = function(corsDef) {
+
+	return {
+		allow: allow.bind(this, corsDef)
+	/*
+	allow: function(req, res, next) {
+		allow(corsDef, req, res, next);
+	}
+	 */
+	};
+
+};
+
+module.exports = CORS;
