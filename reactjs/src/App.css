@@ -38,6 +38,7 @@
     transform: rotate(360deg);
   }
 }
+
 .mainContainer {
 	/* fills the rest of the page */
 	flex-grow: 1;
