@@ -11,7 +11,6 @@ export default class CurrentTemperature extends React.Component {
 	render() {
 
 		// Display temperature or "Loading..." if not available yet
-		console.log(this.props);
 		let tempDisplay = this.props.temp ? this.props.temp + ' F' : 'Loading weather information...';
 
 		return (

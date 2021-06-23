@@ -25,14 +25,15 @@ export default class App extends React.Component {
 			gpsStatus: '',
 			latitude: null,
 			longitude: null,
-			temp: null
+			temp: null,
+			fiveday: null
 		};
 
 	}
 
 	loadWeather(lat, long) {
 
-		console.log('CurrentTemperature, loadWeather', lat, long);
+		console.log('loadWeather', lat, long);
 
 		OpenWeatherMapService.getCurrentWeather(lat, long).then((result) => {
 
@@ -45,6 +46,26 @@ export default class App extends React.Component {
 		}).catch((error) => {
 
 			alert('Error loading weather information. Please try again later.');
+
+		});
+
+	}
+
+	load5dayWeather(lat, long) {
+
+		console.log('load5dayWeather', lat, long);
+
+		OpenWeatherMapService.get5DayWeather(lat, long).then((result) => {
+
+			console.log('load5dayWeather complete', result);
+
+			this.setState({
+				fiveday: result.list
+			});
+
+		}).catch((error) => {
+
+			alert('Error loading 5 day weather information. Please try again later.');
 
 		});
 
@@ -81,8 +102,11 @@ export default class App extends React.Component {
 					longitude: longitude
 				});
 
-				// load weather using lat/long
+				// load current weather using lat/long
 				this.loadWeather(latitude, longitude);
+
+				// load 5 day weather using lat/long
+				this.load5dayWeather(latitude, longitude);
 
 			}, () => {
 
@@ -154,7 +178,8 @@ export default class App extends React.Component {
 												temp={this.state.temp} />
 										</Route>
 										<Route path="/5day" exact>
-											<FiveDayTemperatures />
+											<FiveDayTemperatures
+												forecast={this.state.fiveday} />
 										</Route>
 									</Switch>
 								</div>
