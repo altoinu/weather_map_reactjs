@@ -32,7 +32,8 @@ export default class FiveDayTemperatures extends React.Component {
 							</div>
 						</div>
 						{this.props.forecast.map((item) => {
-							return <div className="row">
+							return <div key={item.dt}
+								className="row">
 								<div className="col">
 									{item.dt_txt}
 								</div>
