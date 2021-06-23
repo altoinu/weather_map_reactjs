@@ -1,5 +1,8 @@
 import { API_KEY } from '../constants/OpenWeatherAPI';
 
+/**
+ * Service class to talk to Open Weather API.
+ */
 class OpenWeatherMapService {
 
 	logPrefix = 'OpenWeatherMapService';

@@ -1,5 +1,12 @@
 import React from 'react';
 
+import './FiveDayTemperatures.css';
+
+import WeatherConditionIcon from '../components/WeatherConditionIcon';
+
+/**
+ * Display 5 day temperatures in row/col format.
+ */
 export default class FiveDayTemperatures extends React.Component {
 
 	constructor(props) {
@@ -41,7 +48,8 @@ export default class FiveDayTemperatures extends React.Component {
 									{item.main.temp} F
 								</div>
 								<div className="col">
-									{item.weather[0].main}
+									<WeatherConditionIcon
+										condition={item.weather[0]} />
 								</div>
 							</div>;
 						})}

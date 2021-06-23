@@ -1,5 +1,8 @@
 import React from 'react';
 
+/**
+ * Display current temperature.
+ */
 export default class CurrentTemperature extends React.Component {
 
 	constructor(props) {
