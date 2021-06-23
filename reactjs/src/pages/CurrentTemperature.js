@@ -100,8 +100,12 @@ export default class CurrentTemperature extends React.Component {
 		];
 
 		// If temperature is loaded, display it
-		if (this.state.temp)
-			h2Contents.push(<span> - {this.state.temp} F</span>);
+		if (this.state.temp) {
+
+			h2Contents[0] += ': ';
+			h2Contents.push(<span>{this.state.temp} F</span>);
+
+		}
 
 		return (
 			<div>
