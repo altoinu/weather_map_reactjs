@@ -10,21 +10,21 @@ class OpenWeatherMapService {
 
 		// https://openweathermap.org/current
 		// //api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API key}
-		const url = new URL('http://api.openweathermap.org/data/2.5/weather');
 		//const url = new URL('http://localhost:4000/currentTemperature');
+		const url = new URL('http://api.openweathermap.org/data/2.5/weather');
 		const params = {
 			appid: API_KEY,
 			lat: lat,
-			lon: long
+			lon: long,
+			units: 'imperial'
 		};
-
 		url.search = new URLSearchParams(params).toString();
 
 		console.log(url);
 
-		fetch(url, {
+		return fetch(url, {
 			method: 'GET',
-			mode: 'cors',
+			//mode: 'cors',
 		}).then((response) => {
 
 			console.log(this.logPrefix, 'getCurrentWeather success', response);
@@ -33,7 +33,13 @@ class OpenWeatherMapService {
 		}).then((result) => {
 
 			console.log(this.logPrefix, 'getCurrentWeather result', result);
+			return result;
 
+		}).catch((error) => {
+			
+			console.error(this.logPrefix, 'getCurrentWeather error', error);
+			return Promise.reject(new Error(error));
+			
 		});
 
 	}

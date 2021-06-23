@@ -32,6 +32,7 @@ function App() {
 */}
 				<BrowserRouter basename="/">
 					<div className="mainContainer">
+						{/* navigation */}
 						<nav className="navContainer">
 							<ul className="nav flex-column">
 								<li className="nav-item">
@@ -40,6 +41,7 @@ function App() {
 								</li>
 							</ul>
 						</nav>
+						{/* route and each "page" */}
 						<div className="contentContainer">
 							<Switch>
 								<Route path="/" exact>

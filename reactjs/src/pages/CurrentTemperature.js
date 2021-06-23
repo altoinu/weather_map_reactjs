@@ -11,7 +11,8 @@ export default class CurrentTemperature extends React.Component {
 		this.state = {
 			gpsStatus: '',
 			latitude: null,
-			longitude: null
+			longitude: null,
+			temp: null
 		};
 
 	}
@@ -20,13 +21,24 @@ export default class CurrentTemperature extends React.Component {
 
 		console.log('CurrentTemperature, loadWeather', lat, long);
 
-		OpenWeatherMapService.getCurrentWeather(lat, long);
+		OpenWeatherMapService.getCurrentWeather(lat, long).then((result) => {
+
+			this.setState({
+				temp: result.main.temp
+			});
+
+		}).catch((error) => {
+
+			alert('Error loading weather information. Please try again later.');
+
+		});
 
 	}
 
 	componentDidMount() {
 
-		// get current location
+		// get current location on component mount
+
 		if (!navigator.geolocation) {
 
 			console.error('CurrentTemperature, gps not supported');
@@ -54,6 +66,7 @@ export default class CurrentTemperature extends React.Component {
 					longitude: longitude
 				});
 
+				// load weather using lat/long
 				this.loadWeather(latitude, longitude);
 
 			}, () => {
@@ -82,9 +95,17 @@ export default class CurrentTemperature extends React.Component {
 			display: this.state.latitude ? 'block' : 'none'
 		};
 
+		let h2Contents = [
+			'Current Temperature'
+		];
+
+		// If temperature is loaded, display it
+		if (this.state.temp)
+			h2Contents.push(<span> - {this.state.temp} F</span>);
+
 		return (
 			<div>
-				<h2>Current Temperature</h2>
+				<h2>{h2Contents}</h2>
 				<div className="container">
 					<div className="row">
 						<div className="col"
