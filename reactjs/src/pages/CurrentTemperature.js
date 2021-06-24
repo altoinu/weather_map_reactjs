@@ -13,12 +13,17 @@ export default class CurrentTemperature extends React.Component {
 
 	render() {
 
-		// Display temperature or "Loading..." if not available yet
-		let tempDisplay = this.props.temp ? this.props.temp + ' F' : 'Loading weather information...';
+		// Display temperature, "Loading..." if not available yet, or error message
 
 		return (
 			<div>
-				<h5>Current Temperature: <span>{tempDisplay}</span></h5>
+				<h5>Current Temperature: <span>{
+					this.props.gpserror
+						? 'Could not load weather information'
+						: this.props.temp
+							? this.props.temp + ' F'
+							: 'Loading weather information...'
+				}</span></h5>
 			</div>
 		);
 
