@@ -24,6 +24,8 @@ export default class App extends React.Component {
 		this.state = {
 			// status message
 			gpsStatus: '',
+			// gps error
+			error: null,
 			// gps coords
 			latitude: null,
 			longitude: null,
@@ -85,7 +87,7 @@ export default class App extends React.Component {
 
 			// GPS unavailable or user refused access
 
-			console.error('CurrentTemperature, gps not supported');
+			console.error('gps not supported');
 
 			this.setState({
 				gpsStatus: 'Geolocation is not supported by your browser'
@@ -95,10 +97,10 @@ export default class App extends React.Component {
 
 			// GPS available
 
-			console.log('CurrentTemperature, gps...');
+			console.log('gps locatings...');
 
 			this.setState({
-				gpsStatus: 'Locating…'
+				gpsStatus: 'Trying to deteremine your location…'
 			});
 
 			// Get coordinates
@@ -120,12 +122,15 @@ export default class App extends React.Component {
 				// load 5 day weather using lat/long
 				this.load5dayWeather(latitude, longitude);
 
-			}, () => {
+			}, (error) => {
 
 				// Error loading GPS coordinates
 
+				console.error('navigator.geolocation error:', error);
+
 				this.setState({
 					gpsStatus: 'Unable to retrieve your location',
+					error: error,
 					latitude: null,
 					longitude: null
 				});
@@ -190,11 +195,13 @@ export default class App extends React.Component {
 									<Switch>
 										<Route path="/" exact>
 											<CurrentTemperature
-												temp={this.state.temp} />
+												temp={this.state.temp}
+												gpserror={this.state.error} />
 										</Route>
 										<Route path="/5day" exact>
 											<FiveDayTemperatures
-												forecast={this.state.fiveday} />
+												forecast={this.state.fiveday}
+												gpserror={this.state.error} />
 										</Route>
 									</Switch>
 								</div>
