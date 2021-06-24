@@ -1,4 +1,26 @@
-# Getting Started with Create React App
+# Detroit Labs Weather Homework
+
+Refer to included .pdf (Detroit Labs Weather Homework20180619.pdf) for details on the app.
+
+## Required stuff
+Node.js (>= v15.13.0) and npm
+
+## Setup
+
+Run this once initially:
+
+```
+npm install
+```
+
+## Running the app
+
+
+```
+npm start
+```
+
+## Other Notes
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
