@@ -22,10 +22,14 @@ export default class App extends React.Component {
 		super(props);
 
 		this.state = {
+			// status message
 			gpsStatus: '',
+			// gps coords
 			latitude: null,
 			longitude: null,
+			// current temperature
 			temp: null,
+			// 5 day forecast
 			fiveday: null
 		};
 
@@ -39,6 +43,7 @@ export default class App extends React.Component {
 
 			console.log('loadWeather complete', result);
 
+			// Remember current temperature
 			this.setState({
 				temp: result.main.temp
 			});
@@ -59,6 +64,7 @@ export default class App extends React.Component {
 
 			console.log('load5dayWeather complete', result);
 
+			// Remember 5 day forcast list
 			this.setState({
 				fiveday: result.list
 			});
@@ -77,6 +83,8 @@ export default class App extends React.Component {
 
 		if (!navigator.geolocation) {
 
+			// GPS unavailable or user refused access
+
 			console.error('CurrentTemperature, gps not supported');
 
 			this.setState({
@@ -85,14 +93,18 @@ export default class App extends React.Component {
 
 		} else {
 
+			// GPS available
+
 			console.log('CurrentTemperature, gps...');
 
 			this.setState({
 				gpsStatus: 'Locating…'
 			});
 
+			// Get coordinates
 			navigator.geolocation.getCurrentPosition((position) => {
 
+				// Remember latitude and longitude
 				const latitude = position.coords.latitude;
 				const longitude = position.coords.longitude;
 
@@ -109,6 +121,8 @@ export default class App extends React.Component {
 				this.load5dayWeather(latitude, longitude);
 
 			}, () => {
+
+				// Error loading GPS coordinates
 
 				this.setState({
 					gpsStatus: 'Unable to retrieve your location',
@@ -152,6 +166,7 @@ export default class App extends React.Component {
 									</li>
 								</ul>
 							</nav>
+							{/* main contents */}
 							<div className="contentContainer">
 								<div className="container">
 									<div className="row">
