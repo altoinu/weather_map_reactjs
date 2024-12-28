@@ -81,6 +81,17 @@ export default class App extends React.Component {
 
 	componentDidMount() {
 
+		/*
+		const latitude = 42.43841066690454;
+		const longitude = -83.47843183527749;
+
+		// load current weather using lat/long
+		this.loadWeather(latitude, longitude);
+
+		// load 5 day weather using lat/long
+		this.load5dayWeather(latitude, longitude);
+		*/
+
 		// get current location on component mount
 
 		if (!navigator.geolocation) {
